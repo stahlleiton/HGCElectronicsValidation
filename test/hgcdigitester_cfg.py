@@ -6,50 +6,50 @@ process = cms.Process("ANALYSIS", Phase2C11I13M9)
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('standard')
-options.register('input', 
+options.register('input',
                  '/eos/cms/store/cmst3/group/hgcal/CMG_studies/Production/FlatEGunK0L_12_3_0_pre5_D86_noPU',
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.string, 
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
                  "input directory")
-options.register('geometry', 
-                 'Extended2026D86', 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.string, 
+options.register('geometry',
+                 'Extended2026D86',
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
                  'geometry to use')
-options.register('sipmMap', 
-                 'SimCalorimetry/HGCalSimProducers/data/sipmParams_geom-10.txt', 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.string, 
+options.register('sipmMap',
+                 'SimCalorimetry/HGCalSimProducers/data/sipmParams_geom-10.txt',
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
                  'geometry to use')
 options.register('useTDCOnsetAuto',
                  False,
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.bool,
                  'use tdcOnset values that were automatically set instead of the externally specified tdcOnset_fC')
-options.register('useVanillaCfg', 
-                 False, 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.bool, 
+options.register('useVanillaCfg',
+                 False,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.bool,
                  'use vanilla fe parameters from the cfg')
-options.register('hardProcOnly', 
-                 False, 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.bool, 
+options.register('hardProcOnly',
+                 False,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.bool,
                  'filter hits for hard process only (matching SimHits')
-options.register('onlyROCTree', 
-                 False, 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.bool, 
+options.register('onlyROCTree',
+                 False,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.bool,
                  'save only the ROC summary tree')
-options.register('byDoseAlgo', 
-                 0, 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.int, 
+options.register('byDoseAlgo',
+                 0,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.int,
                  'dose algorithm to use')
-options.register('pxFiringRate', 
-                 -1, 
-                 VarParsing.multiplicity.singleton, 
-                 VarParsing.varType.float, 
+options.register('pxFiringRate',
+                 -1,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.float,
                  'SiPM pixel firing rate')
 
 options.parseArguments()
@@ -96,7 +96,7 @@ process.hgchebackDigitizer.digiCfg.sipmMap = cms.string(options.sipmMap)
 
 #analyzer
 process.ana = cms.EDAnalyzer("HGCDigiTester",
-                             hgceeDigitizer=process.hgceeDigitizer,                             
+                             hgceeDigitizer=process.hgceeDigitizer,
                              hgcehDigitizer=process.hgchefrontDigitizer,
                              hgcehsciDigitizer=process.hgchebackDigitizer,
                              hgcee_fCPerMIP=process.HGCalRecHit.HGCEE_fCPerMIP,
@@ -105,7 +105,9 @@ process.ana = cms.EDAnalyzer("HGCDigiTester",
                              useTDCOnsetAuto=cms.bool(options.useTDCOnsetAuto),
                              useVanillaCfg=cms.bool(options.useVanillaCfg),
                              hardProcOnly=cms.bool(options.hardProcOnly),
-                             onlyROCTree=cms.bool(options.onlyROCTree)
+                             onlyROCTree=cms.bool(options.onlyROCTree),
+                             maxDeltaR=cms.double(0.2),
+                             clustJetAlgo=cms.int32(1)
                          )
 
 process.RandomNumberGeneratorService.ana = cms.PSet( initialSeed = cms.untracked.uint32(0),
