@@ -4,7 +4,7 @@
 #include "UserCode/HGCElectronicsValidation/interface/WaferOccupancyHisto.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -60,7 +60,7 @@ struct WaferEquivalentInfo_t {
 };
 
 
-class HGCGeometryScan : public edm::EDAnalyzer 
+class HGCGeometryScan : public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
   
  public:
@@ -82,7 +82,7 @@ class HGCGeometryScan : public edm::EDAnalyzer
   std::map<std::pair<int,int>,int> uvSectorMap_;
 
   //geometry and digis to analyze
-  std::string geoCEE_,geoCEH_;
+  const edm::ESGetToken<HGCalGeometry, IdealGeometryRecord> geoCEE_,geoCEH_;
   std::map<std::string,const HGCalGeometry *> hgcGeometries_;
 };
  

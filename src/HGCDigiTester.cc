@@ -271,7 +271,7 @@ void HGCDigiTester::analyze( const edm::Event &iEvent, const edm::EventSetup &iS
     const std::vector<PCaloHit> &simHits(i==0 ? *simHitsCEE : (i==1 ? *simHitsCEH : *simHitsCEHSci) );
     const auto geo = (i==0 ? geoCEE : (i==1 ? geoCEH : geoCEHSci) );
 
-    std::map<uint32_t,double> simToA, simTE;
+    std::map<uint32_t,double> simToT, simToA, simTE;
     constexpr double c_cm_ns = CLHEP::c_light * CLHEP::ns / CLHEP::cm;
     for(auto sh : simHits) {
       uint32_t key(sh.id());
@@ -279,7 +279,9 @@ void HGCDigiTester::analyze( const edm::Event &iEvent, const edm::EventSetup &iS
       const auto tHGCAL = sh.time();
       const auto dist2center = geo->getPosition(key).mag();
       const auto toa = tHGCAL - dist2center/c_cm_ns + tofDelay_[i];
-      if (std::floor(toa / bxTime_[i]) != 0) continue;
+      const auto tot = tHGCAL + tofDelay_[i];
+      if (std::floor(tot / bxTime_[i]) != 0) continue;
+      simToT[key] += tot*ene;
       simToA[key] += toa*ene;
       simTE[key] += ene;
     }
@@ -298,8 +300,10 @@ void HGCDigiTester::analyze( const edm::Event &iEvent, const edm::EventSetup &iS
       uint32_t adc(d.sample(itSample).data() );
       adc_=adc;
       toa_=d.sample(itSample).getToAValid() ? d.sample(itSample).toa() : 0;
-      toarec_=d.sample(itSample).getToAValid() ? ((toa_+0.5)*toaLSB_ns_[i] - tofDelay_[i]) : -999;
+      const auto dist2center = geo->getPosition(key).mag();
+      toarec_=d.sample(itSample).getToAValid() ? ((toa_+0.5)*toaLSB_ns_[i] - tofDelay_[i] - dist2center/c_cm_ns) : -999;
       toasim_=simToA.find(key)!=simToA.end() ? (simToA[key]/simTE[key] - tofDelay_[i]) : -999;
+      //if (d.sample(itSample).getToAValid()) std::cout << "TOT: " << ((toa_+0.5)*toaLSB_ns_[i] - tofDelay_[i]) << " , " << (simToT[key]/simTE[key] - tofDelay_[i]) << " and TOA: " << toarec_ << " , " << toasim_ << " <<>> tofDelay: " << tofDelay_[i] << std::endl;
       isToT_=d.sample(itSample).mode();
       inShower_=!showerDetIds.empty() ? showerDetIds.find(key)!=showerDetIds.end() : -1;
 

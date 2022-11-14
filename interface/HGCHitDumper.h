@@ -4,7 +4,7 @@
 #include "UserCode/HGCElectronicsValidation/interface/WaferOccupancyHisto.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -56,7 +56,7 @@
    @class HGCHitDumper
 */
 
-class HGCHitDumper : public edm::EDAnalyzer 
+class HGCHitDumper : public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
   
  public:
@@ -69,7 +69,7 @@ class HGCHitDumper : public edm::EDAnalyzer
  private:
   
   //geometry and hits
-  std::string geo_;
+  const edm::ESGetToken<HGCalGeometry, IdealGeometryRecord> geo_;
   edm::EDGetTokenT<HGCalDigiCollection> digis_;
   edm::EDGetTokenT<HGCRecHitCollection> recHits_;
   edm::EDGetTokenT<std::vector<reco::GenJet> > genJets_;

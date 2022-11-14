@@ -39,8 +39,8 @@ using namespace std;
 HGCOccupancyAnalyzer::HGCOccupancyAnalyzer( const edm::ParameterSet &iConfig ) :   
   puToken_(consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("addPileupInfo"))),
   genJets_( consumes<std::vector<reco::GenJet> >(edm::InputTag("ak8GenJetsNoNu")) ),
-  geoCEE_("HGCalEESensitive"),
-  geoCEH_("HGCalHESiliconSensitive"),
+  geoCEE_( esConsumes(edm::ESInputTag("", "HGCalEESensitive")) ),
+  geoCEH_( esConsumes(edm::ESInputTag("", "HGCalHESiliconSensitive")) ),
   digisCEE_( consumes<HGCalDigiCollection>(edm::InputTag("simHGCalUnsuppressedDigis","EE")) ),
   digisCEH_( consumes<HGCalDigiCollection>(edm::InputTag("simHGCalUnsuppressedDigis","HEfront")) ),
   nevts_(0),
@@ -206,9 +206,7 @@ void HGCOccupancyAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSe
 
     //get the geometry
     std::string sd=subdets[subdet];
-    edm::ESHandle<HGCalGeometry> ceeGeoHandle;
-    iSetup.get<IdealGeometryRecord>().get(subdet==0 ? geoCEE_ : geoCEH_,ceeGeoHandle);
-    const HGCalGeometry *geo=ceeGeoHandle.product();
+    const auto& geo = &iSetup.getData(subdet==0 ? geoCEE_ : geoCEH_);
     const HGCalDDDConstants &ddd=geo->topology().dddConstants();
 
     //configure noise map

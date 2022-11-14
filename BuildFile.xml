@@ -7,6 +7,7 @@
 <use name="fastjet"/>
 <use name="fastjet-contrib"/>
 <use name="Geometry/Records"/>
+<use name="MagneticField/Records"/>
 <use name="FWCore/Framework"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="CommonTools/UtilAlgos"/>
@@ -15,4 +16,10 @@
 <use name="SimDataFormats/PileupSummaryInfo"/>
 <use name="SimDataFormats/CaloHit"/>
 <use name="DataFormats/JetReco"/>
+<use name="TrackingTools/GeomPropagators"/>
+<use name="TrackingTools/Records"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackPropagation/SteppingHelixPropagator"/>
+<use name="RecoLocalCalo/HGCalRecAlgos"/>
+<use name="CommonTools/BaseParticlePropagator"/>
 <flags EDM_PLUGIN="1"/>

@@ -37,7 +37,7 @@ using namespace std;
 
 //
 HGCHitDumper::HGCHitDumper( const edm::ParameterSet &iConfig ) :   
-  geo_("HGCalEESensitive"),
+  geo_( esConsumes(edm::ESInputTag("", "HGCalEESensitive")) ),
   digis_( consumes<HGCalDigiCollection>(edm::InputTag("simHGCalUnsuppressedDigis","EE")) ),
   recHits_( consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit", "HGCEERecHits")) ),
   genJets_( consumes<std::vector<reco::GenJet> >(edm::InputTag("ak4GenJetsNoNu")) ),
@@ -88,9 +88,7 @@ void HGCHitDumper::analyze( const edm::Event &iEvent, const edm::EventSetup &iSe
 
 
   //read geometry from event setup
-  edm::ESHandle<HGCalGeometry> geoHandle;
-  iSetup.get<IdealGeometryRecord>().get(geo_,geoHandle);
-  const HGCalDDDConstants &ddd=geoHandle->topology().dddConstants();
+  const HGCalDDDConstants &ddd=iSetup.getData(geo_).topology().dddConstants();
 
   //map digis to detIds
   edm::Handle<HGCalDigiCollection> digisHandle;

@@ -1,5 +1,5 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESTransientHandle.h"
@@ -26,19 +26,28 @@
    @short an EDAnalyzer to test features in the radiation map class
 */
 
-class HGCTestRadiationMap : public edm::EDAnalyzer 
+class HGCTestRadiationMap : public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
 
  public:
 
-  explicit HGCTestRadiationMap( const edm::ParameterSet& ) {}
+  explicit HGCTestRadiationMap( const edm::ParameterSet& );
   ~HGCTestRadiationMap(){}
   virtual void analyze( const edm::Event&, const edm::EventSetup& );
   void endJob() {}
 
  private:
+  const std::array<std::string, 2> geoNames_{{"HGCalEESensitive","HGCalHESiliconSensitive"}};
+  std::array<edm::ESGetToken<HGCalGeometry, IdealGeometryRecord>, 2> geometry_;
 };
- 
+
+//
+HGCTestRadiationMap::HGCTestRadiationMap( const edm::ParameterSet &iConfig )
+{
+  for (size_t i=0; i<geoNames_.size(); i++)
+    geometry_[i] = esConsumes(edm::ESInputTag("", geoNames_[i]));
+}
+
 //
 void HGCTestRadiationMap::analyze( const edm::Event &iEvent, const edm::EventSetup &iSetup) {
 
@@ -52,16 +61,13 @@ void HGCTestRadiationMap::analyze( const edm::Event &iEvent, const edm::EventSet
   std::vector<double> cceParsThin={1.5e+15, -3.09878e-16, 0.211207};
   std::vector<double> cceParsThick={6e+14,   -7.96539e-16, 0.251751};
 
-  std::string geoNames[2]={"HGCalEESensitive","HGCalHESiliconSensitive"};
-  for(size_t i=0; i<sizeof(geoNames)/sizeof(std::string); i++) {
+  for(size_t i=0; i<geoNames_.size(); i++) {
 
     std::cout << "***************************************************" << std::endl
-              << "Checking sector equivalence for " << geoNames[i] << std::endl;
+              << "Checking sector equivalence for " << geoNames_[i] << std::endl;
 
     //get geometry and valid detIds
-    edm::ESHandle<HGCalGeometry> geoHandle;
-    iSetup.get<IdealGeometryRecord>().get(geoNames[i],geoHandle);
-    const HGCalGeometry *geo=geoHandle.product();
+    const auto& geo = &iSetup.getData(geometry_[i]);
     const std::vector<DetId> &validDetIds = geo->getValidDetIds();
 
     //start alternative noise maps

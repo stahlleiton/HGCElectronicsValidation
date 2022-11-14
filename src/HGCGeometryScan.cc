@@ -39,8 +39,8 @@ using namespace std;
 
 //
 HGCGeometryScan::HGCGeometryScan( const edm::ParameterSet &iConfig ) :   
-  geoCEE_("HGCalEESensitive"),
-  geoCEH_("HGCalHESiliconSensitive")
+  geoCEE_( esConsumes(edm::ESInputTag("", "HGCalEESensitive")) ),
+  geoCEH_( esConsumes(edm::ESInputTag("", "HGCalHESiliconSensitive")) )
 {  
 }
 
@@ -157,12 +157,8 @@ void HGCGeometryScan::prepareAnalysis()
 void HGCGeometryScan::analyze( const edm::Event &iEvent, const edm::EventSetup &iSetup)
 {
   //read geometry from event setup
-  edm::ESHandle<HGCalGeometry> ceeGeoHandle;
-  iSetup.get<IdealGeometryRecord>().get(geoCEE_,ceeGeoHandle);
-  hgcGeometries_["CEE"]=ceeGeoHandle.product();
-  edm::ESHandle<HGCalGeometry> cehGeoHandle;
-  iSetup.get<IdealGeometryRecord>().get(geoCEH_,cehGeoHandle);
-  hgcGeometries_["CEH"]=cehGeoHandle.product();
+  hgcGeometries_["CEE"]=&iSetup.getData(geoCEE_);
+  hgcGeometries_["CEH"]=&iSetup.getData(geoCEH_);
 
   prepareAnalysis();
 

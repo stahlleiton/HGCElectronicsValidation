@@ -36,9 +36,9 @@ using namespace std;
 //
 
 //
-HGCSiOperationScan::HGCSiOperationScan( const edm::ParameterSet &iConfig ) :   
-  geoCEE_("HGCalEESensitive"),
-  geoCEH_("HGCalHESiliconSensitive"),
+HGCSiOperationScan::HGCSiOperationScan( const edm::ParameterSet &iConfig ) :  
+  geoCEE_( esConsumes(edm::ESInputTag("", "HGCalEESensitive")) ),
+  geoCEH_( esConsumes(edm::ESInputTag("", "HGCalHESiliconSensitive")) ),
   setPreassignedWafersFromCMSSW_(iConfig.getParameter<bool>("setPreassignedWafersFromCMSSW")),
   siType_(iConfig.getParameter<edm::ParameterSet>("siType")),
   aimMIPtoADC_(iConfig.getParameter<int>("aimMIPtoADC")),  
@@ -240,12 +240,8 @@ void HGCSiOperationScan::analyze(const edm::Event &iEvent, const edm::EventSetup
 {
 
   //the geometries
-  edm::ESHandle<HGCalGeometry> ceeGeoHandle;
-  iSetup.get<IdealGeometryRecord>().get(geoCEE_,ceeGeoHandle);
-  hgcGeometries_["CEE"]=ceeGeoHandle.product();
-  edm::ESHandle<HGCalGeometry> cehGeoHandle;
-  iSetup.get<IdealGeometryRecord>().get(geoCEH_,cehGeoHandle);
-  hgcGeometries_["CEH"]=cehGeoHandle.product();
+  hgcGeometries_["CEE"]=&iSetup.getData(geoCEE_);
+  hgcGeometries_["CEH"]=&iSetup.getData(geoCEH_);
   HGCSiliconDetIdToROC d2roc;
 
   //Si parameters
