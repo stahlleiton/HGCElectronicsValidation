@@ -244,7 +244,7 @@ void HGCOccupancyAnalyzer::analyze( const edm::Event &iEvent, const edm::EventSe
 	}
 
         HGCalSiNoiseMap<HGCSiliconDetId>::SiCellOpCharacteristics siop=noiseMaps_[subdet]->getSiCellOpCharacteristics(detId);
-        std::tuple<int, int, int> wafType = ddd.waferType(detId); //type,partial,orientation
+        std::tuple<int, int, int> wafType = ddd.waferType(detId, false); //type,partial,orientation
         waferHistos_[key]->addPad( std::get<0>(wafType), siop );
 
         //global pad counter

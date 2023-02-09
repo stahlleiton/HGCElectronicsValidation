@@ -84,7 +84,7 @@ void HGCGeometryScan::prepareAnalysis()
 
         int layer=detId.layer();
         std::pair<int,int> waferUV=detId.waferUV();        
-        int waferTypeL = ddd.waferType(layer,waferUV.first,waferUV.second);
+        int waferTypeL = ddd.waferType(layer,waferUV.first,waferUV.second,false);
         
         TString key(Form("%s_lay%d_xy",it.first.c_str(),layer));
         if(histos.find(key)==histos.end()) {
@@ -102,7 +102,7 @@ void HGCGeometryScan::prepareAnalysis()
         histos[key]->SetPoint(npts,pt.x(),pt.y(),ci);
  
         //find rotation to equivalence sector
-        std::pair<double, double> waferPos=ddd.waferPosition(layer,waferUV.first,waferUV.second,true);
+        std::pair<double, double> waferPos=ddd.waferPosition(layer,waferUV.first,waferUV.second,true,false);
         double waferPhi=atan2(waferPos.second,waferPos.first);
         double waferRadius=hypot(waferPos.first,waferPos.second);
         double z(ddd.waferZ(layer,true));

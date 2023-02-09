@@ -118,7 +118,7 @@ void HGCHitDumper::analyze( const edm::Event &iEvent, const edm::EventSetup &iSe
     en_        = photons[phoOffset].E();
     eta_       = photons[phoOffset].Eta();
     layer_     = detId.layer();
-    waferL_    = ddd.waferType(recHit.id());
+    waferL_    = ddd.waferType(recHit.id(), false);
     threshold_ = digi.sample(2).threshold();
     gain_      = digi.sample(2).gain();
     isTDC_     = digi.sample(2).mode() ;
